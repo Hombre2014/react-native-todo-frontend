@@ -1,11 +1,15 @@
-import { View, Text, StyleSheet, Dimensions } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import React from 'react';
 import FormContainer from './FormContainer';
+import FormInput from './FormInput';
+import FormSubmitButton from './FormSubmitButton';
 
 const LoginForm = () => {
   return (
     <FormContainer>
-      <Text style={{ fontSize: 50, fontWeight: 'bold' }}>Login</Text>
+      <FormInput placeholder={'example@domain.com'} title={'Email'} />
+      <FormInput placeholder={'********'} title={'Password'} />
+      <FormSubmitButton title='Login' />
     </FormContainer >
   )
 }
