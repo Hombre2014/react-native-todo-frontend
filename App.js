@@ -17,7 +17,9 @@ export default function App() {
       </View>
       <ScrollView horizontal pagingEnabled showsHorizontalScrollIndicator={false} >
         <LoginForm />
-        <SignupForm />
+        <ScrollView>
+          <SignupForm />
+        </ScrollView>
       </ScrollView>
     </View>
   );
