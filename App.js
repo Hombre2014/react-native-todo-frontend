@@ -11,7 +11,7 @@ export default function App() {
       <View style={{ height: 80 }}>
         <FormHeader leftHeading='Welcome ' rightHeading='Back' subHeading='YouTube Task Manager' />
       </View>
-      <View style={{ flexDirection: 'row', paddingHorizontal: 20 }}>
+      <View style={{ flexDirection: 'row', paddingHorizontal: 20, marginBottom: 20 }}>
         <FormSelectorBtn style={styles.borderLeft} backgroundColor='rgba(27,27,51,1)' title='Login' />
         <FormSelectorBtn style={styles.borderRight} backgroundColor='rgba(27,27,51,0.4)' title='Sign Up' />
       </View>
