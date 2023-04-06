@@ -1,21 +1,67 @@
 import { StatusBar } from 'expo-status-bar';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, View, Animated, Dimensions } from 'react-native';
 import FormHeader from './app/components/FormHeader';
 import FormSelectorBtn from './app/components/FormSelectorBtn';
 import LoginForm from './app/components/LoginForm';
 import SignupForm from './app/components/SignupForm';
+import { useRef } from 'react';
+
+const { width } = Dimensions.get('window');
 
 export default function App() {
+  const animation = useRef(new Animated.Value(0)).current;
+
+  const rightHeaderOpacity = animation.interpolate({
+    inputRange: [0, width],
+    outputRange: [1, 0]
+  });
+
+  const rightHeaderTranslateY = animation.interpolate({
+    inputRange: [0, width],
+    outputRange: [0, -20]
+  });
+
+  const leftHeaderTranslateX = animation.interpolate({
+    inputRange: [0, width],
+    outputRange: [0, 40]
+  });
+
+  const loginColorInterpolate = animation.interpolate({
+    inputRange: [0, width],
+    outputRange: ['rgba(27,27,51,1)', 'rgba(27,27,51,0.4)']
+  });
+
+  const signupColorInterpolate = animation.interpolate({
+    inputRange: [0, width],
+    outputRange: ['rgba(27,27,51,0.4)', 'rgba(27,27,51,1)']
+  });
+
   return (
     <View style={{ fle: 1, paddingTop: 60 }}>
       <View style={{ height: 80 }}>
-        <FormHeader leftHeading='Welcome ' rightHeading='Back' subHeading='YouTube Task Manager' />
+        <FormHeader
+          leftHeading='Welcome '
+          rightHeading='Back'
+          subHeading='YouTube Task Manager'
+          rightHeaderOpacity={rightHeaderOpacity}
+          leftHeaderTranslateX={leftHeaderTranslateX}
+          rightHeaderTranslateY={rightHeaderTranslateY}
+        />
       </View>
       <View style={{ flexDirection: 'row', paddingHorizontal: 20, marginBottom: 20 }}>
-        <FormSelectorBtn style={styles.borderLeft} backgroundColor='rgba(27,27,51,1)' title='Login' />
-        <FormSelectorBtn style={styles.borderRight} backgroundColor='rgba(27,27,51,0.4)' title='Sign Up' />
+        <FormSelectorBtn style={styles.borderLeft} backgroundColor={loginColorInterpolate} title='Login' />
+        <FormSelectorBtn style={styles.borderRight} backgroundColor={signupColorInterpolate} title='Sign Up' />
       </View>
-      <ScrollView horizontal pagingEnabled showsHorizontalScrollIndicator={false} >
+      <ScrollView
+        horizontal
+        pagingEnabled
+        showsHorizontalScrollIndicator={false}
+        scrollEventThrottle={16}
+        onScroll={Animated.event(
+          [{ nativeEvent: { contentOffset: { x: animation } } }],
+          { useNativeDriver: false }
+        )}
+      >
         <LoginForm />
         <ScrollView>
           <SignupForm />
