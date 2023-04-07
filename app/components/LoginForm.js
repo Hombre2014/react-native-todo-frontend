@@ -28,7 +28,6 @@ const LoginForm = () => {
 
   const submitForm = () => {
     if (isValidForm) {
-      // do something
       console.log('On FormSubmit, UserInfo: ', userInfo);
     }
   };

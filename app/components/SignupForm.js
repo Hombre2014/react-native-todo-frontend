@@ -4,14 +4,23 @@ import FormContainer from './FormContainer';
 import FormSubmitButton from './FormSubmitButton';
 import FormInput from './FormInput';
 import { isValidEmail, isValidObjField, updateError } from '../utils/methods';
+import { Formik } from 'formik';
+import * as Yup from 'yup';
+
+const validationSchema = Yup.object({
+  fullName: Yup.string().trim().required('Full name is required!').min(3, 'Full name is too short!'),
+  email: Yup.string().trim().required('Email is required!').email('Invalid email!'),
+  password: Yup.string().trim().required('Password is required!').min(8, 'Password is too short!'),
+  confirmPassword: Yup.string().trim().required('Confirm password is required!').oneOf([Yup.ref('password'), null], 'Passwords do not match!'),
+});
 
 const SignupForm = () => {
-  const [userInfo, setUserInfo] = useState({
+  const userInfo = {
     fullName: '',
     email: '',
     password: '',
     confirmPassword: '',
-  });
+  };
 
   const [error, setError] = useState('');
   const { fullName, email, password, confirmPassword } = userInfo;
@@ -23,16 +32,10 @@ const SignupForm = () => {
   console.log('UserInfo: ', userInfo);
 
   const isValidForm = () => {
-    // console.log('User info is: ', userInfo);
-    // Checks if all fields have been filled out
     if (!isValidObjField(userInfo)) return updateError('All fields required!', setError);
-    // Check of the full name is at least 3 characters long and valid
     if (fullName.length < 3 || !fullName.trim()) return updateError('Full name must be at least 3 characters long!', setError);
-    // Check if the email is valid
     if (!isValidEmail(email)) return updateError('Invalid email!', setError);
-    // Check if the password is at least 8 characters long
     if (password.length < 8 || !password.trim()) return updateError('Password must be at least 8 characters long!', setError);
-    // Check if the password and confirm password match
     if (password !== confirmPassword) return updateError('Passwords do not match!', setError);
 
     return true;
@@ -40,7 +43,6 @@ const SignupForm = () => {
 
   const submitForm = () => {
     if (isValidForm) {
-      // do something
       console.log('On FormSubmit, UserInfo: ', userInfo);
       console.log('On FormSubmit, Error: ', error);
     }
@@ -48,44 +50,61 @@ const SignupForm = () => {
 
   return (
     <FormContainer>
-      {error ? (
-        <Text style={{ color: 'red', fontSize: 18, textAlign: 'center' }}>
-          {error}
-        </Text>
-      ) : null}
-      <FormInput
-        value={fullName}
-        placeholder={'John Smith'}
-        label={'Full Name'}
-        onChangeText={(value) => handleOnChangeText('fullName', value)}
-      />
-      <FormInput
-        value={email}
-        autoCapitalize='none'
-        placeholder={'example@domain.com'}
-        label={'Email'}
-        onChangeText={(value) => handleOnChangeText('email', value)}
-      />
-      <FormInput
-        value={password}
-        autoCapitalize='none'
-        secureTextEntry
-        placeholder={'********'}
-        label={'Password'}
-        onChangeText={(value) => handleOnChangeText('password', value)}
-      />
-      <FormInput
-        value={confirmPassword}
-        autoCapitalize='none'
-        secureTextEntry
-        placeholder={'********'}
-        label={'Confirm Password'}
-        onChangeText={(value) => handleOnChangeText('confirmPassword', value)}
-      />
-      <FormSubmitButton
-        onPress={submitForm}
-        label='Sign up'
-      />
+      <Formik initialValues={userInfo} validationSchema={validationSchema} onSubmit={(values, formikActions) => {
+        setTimeout(() => {
+          console.log('On FormSubmit, Values: ', values);
+          formikActions.resetForm();
+          formikActions.setSubmitting(false);
+        }, 3000);
+      }}>
+        {({ values, errors, touched, isSubmitting, handleChange, handleBlur, handleSubmit }) => {
+          const { fullName, email, password, confirmPassword } = values;
+          return <>
+            <FormInput
+              value={fullName}
+              error={touched.fullName && errors.fullName}
+              placeholder={'John Smith'}
+              label={'Full Name'}
+              onBlur={handleBlur('fullName')}
+              onChangeText={handleChange('fullName')}
+            />
+            <FormInput
+              value={email}
+              error={touched.email && errors.email}
+              autoCapitalize='none'
+              placeholder={'example@domain.com'}
+              label={'Email'}
+              onBlur={handleBlur('email')}
+              onChangeText={handleChange('email')}
+            />
+            <FormInput
+              value={password}
+              error={touched.password && errors.password}
+              autoCapitalize='none'
+              secureTextEntry
+              placeholder={'********'}
+              label={'Password'}
+              onBlur={handleBlur('password')}
+              onChangeText={handleChange('password')}
+            />
+            <FormInput
+              value={confirmPassword}
+              error={touched.confirmPassword && errors.confirmPassword}
+              autoCapitalize='none'
+              secureTextEntry
+              placeholder={'********'}
+              label={'Confirm Password'}
+              onBlur={handleBlur('confirmPassword')}
+              onChangeText={handleChange('confirmPassword')}
+            />
+            <FormSubmitButton
+              onPress={handleSubmit}
+              label='Sign up'
+              isSubmitting={isSubmitting}
+            />
+          </>
+        }}
+      </Formik>
     </FormContainer>
   )
 }
