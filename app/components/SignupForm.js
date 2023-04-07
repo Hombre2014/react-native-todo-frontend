@@ -6,6 +6,7 @@ import FormInput from './FormInput';
 import { isValidEmail, isValidObjField, updateError } from '../utils/methods';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
+import client from '../api/client';
 
 const validationSchema = Yup.object({
   fullName: Yup.string().trim().required('Full name is required!').min(3, 'Full name is too short!'),
@@ -29,8 +30,6 @@ const SignupForm = () => {
     setUserInfo({ ...userInfo, [fieldName]: value });
   };
 
-  console.log('UserInfo: ', userInfo);
-
   const isValidForm = () => {
     if (!isValidObjField(userInfo)) return updateError('All fields required!', setError);
     if (fullName.length < 3 || !fullName.trim()) return updateError('Full name must be at least 3 characters long!', setError);
@@ -43,20 +42,26 @@ const SignupForm = () => {
 
   const submitForm = () => {
     if (isValidForm) {
-      console.log('On FormSubmit, UserInfo: ', userInfo);
-      console.log('On FormSubmit, Error: ', error);
+
     }
+  };
+
+  const signUp = async (values, formikActions) => {
+    const res = await client.post('/create-user', {
+      ...values
+    });
+    console.log(res.data);
+    formikActions.resetForm();
+    formikActions.setSubmitting(false);
   };
 
   return (
     <FormContainer>
-      <Formik initialValues={userInfo} validationSchema={validationSchema} onSubmit={(values, formikActions) => {
-        setTimeout(() => {
-          console.log('On FormSubmit, Values: ', values);
-          formikActions.resetForm();
-          formikActions.setSubmitting(false);
-        }, 3000);
-      }}>
+      <Formik
+        initialValues={userInfo}
+        validationSchema={validationSchema}
+        onSubmit={signUp}
+      >
         {({ values, errors, touched, isSubmitting, handleChange, handleBlur, handleSubmit }) => {
           const { fullName, email, password, confirmPassword } = values;
           return <>
