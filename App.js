@@ -4,13 +4,27 @@ import FormHeader from './app/components/FormHeader';
 import FormSelectorBtn from './app/components/FormSelectorBtn';
 import LoginForm from './app/components/LoginForm';
 import SignupForm from './app/components/SignupForm';
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
+import axios from 'axios';
 
 const { width } = Dimensions.get('window');
 
 export default function App() {
   const animation = useRef(new Animated.Value(0)).current;
   const scrollView = useRef(null);
+
+  const fetchAPI = async () => {
+    try {
+      const res = await axios.get('http://192.168.0.122:8000/');
+      console.log(res.data);
+    } catch (error) {
+      console.log(error.message);
+    }
+  }
+
+  useEffect(() => {
+    fetchAPI();
+  }, []);
 
   const rightHeaderOpacity = animation.interpolate({
     inputRange: [0, width],
