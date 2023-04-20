@@ -1,9 +1,11 @@
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import React, { useState } from 'react';
 import * as ImagePicker from 'expo-image-picker';
+import client from '../api/client';
 
 const ImageUpload = () => {
   const [profileImage, setProfileImage] = useState(null);
+  const [uploadProgress, setUploadProgress] = useState(0);
   const openImageLibrary = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== 'granted') {
@@ -22,16 +24,40 @@ const ImageUpload = () => {
     }
   };
 
-  const uploadProfileImage = () => {
-    console.log(profileImage);
+  const uploadProfileImage = async () => {
+    const formData = new FormData();
+    formData.append('profile', {
+      name: new Date() + "_profile",
+      uri: profileImage,
+      type: 'image/png',
+    });
+
+    try {
+      const res = await client.post('/upload-profile', formData, {
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'multipart/form-data',
+          authorization: `JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NDM4NTkzYTRjMjk0OTkzZmZjOWE1MDYiLCJpYXQiOjE2ODE5NDM4OTAsImV4cCI6MTY4MjAzMDI5MH0.Jyakvpnknaqk5A8DyFWYBPM7f4JEIiqXZxdKwTSJoGw`
+        },
+        onUploadProgress: ({ loaded, total }) => setUploadProgress(loaded / total),
+      });
+      console.log(res.data);
+    } catch (error) {
+      console.log(error.message);
+    }
   };
 
   return (
     <View style={styles.container}>
       <View>
         <TouchableOpacity onPress={openImageLibrary} style={styles.uploadBtnContainer}>
-          <Text style={styles.uploadBtn}>Upload Profile Image</Text>
+          {profileImage ? <Image source={{ uri: profileImage }} style={{ width: '100%', height: '100%' }} /> : <Text style={styles.uploadBtn}>Upload Profile Image</Text>}
         </TouchableOpacity>
+        {uploadProgress ?
+          <Text>
+            {uploadProgress}
+          </Text> : null
+        }
         <Text style={styles.skip}>Skip</Text>
         {profileImage ?
           <Text style={[styles.skip, { backgroundColor: 'blue', color: 'black', borderRadius: 8 }]}
@@ -59,6 +85,7 @@ const styles = StyleSheet.create({
     borderRadius: 125 / 2,
     justifyContent: 'center',
     alignItems: 'center',
+    overflow: 'hidden',
   },
   uploadBtn: {
     textAlign: 'center',
