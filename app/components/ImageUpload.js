@@ -37,11 +37,10 @@ const ImageUpload = () => {
         headers: {
           Accept: 'application/json',
           'Content-Type': 'multipart/form-data',
-          authorization: `JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NDM4NTkzYTRjMjk0OTkzZmZjOWE1MDYiLCJpYXQiOjE2ODE5NDM4OTAsImV4cCI6MTY4MjAzMDI5MH0.Jyakvpnknaqk5A8DyFWYBPM7f4JEIiqXZxdKwTSJoGw`
-        },
-        onUploadProgress: ({ loaded, total }) => setUploadProgress(loaded / total),
+          authorization: `JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NDM4NTkzYTRjMjk0OTkzZmZjOWE1MDYiLCJpYXQiOjE2ODIwNjg4MzgsImV4cCI6MTY4MjE1NTIzOH0.7Aj2vcwp02s5tBeANeLsHft4SRL0z9b9SbAuoWVV-ic`
+        }
+        // onUploadProgress: ({ loaded, total }) => console.log(loaded / total),
       });
-      console.log(res.data);
     } catch (error) {
       console.log(error.message);
     }
@@ -53,11 +52,6 @@ const ImageUpload = () => {
         <TouchableOpacity onPress={openImageLibrary} style={styles.uploadBtnContainer}>
           {profileImage ? <Image source={{ uri: profileImage }} style={{ width: '100%', height: '100%' }} /> : <Text style={styles.uploadBtn}>Upload Profile Image</Text>}
         </TouchableOpacity>
-        {uploadProgress ?
-          <Text>
-            {uploadProgress}
-          </Text> : null
-        }
         <Text style={styles.skip}>Skip</Text>
         {profileImage ?
           <Text style={[styles.skip, { backgroundColor: 'blue', color: 'black', borderRadius: 8 }]}
