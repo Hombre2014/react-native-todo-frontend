@@ -7,15 +7,17 @@ import { isValidEmail, isValidObjField, updateError } from '../utils/methods';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import client from '../api/client';
+import { StackActions } from '@react-navigation/native';
+import ImageUpload from './ImageUpload';
 
 const validationSchema = Yup.object({
   fullName: Yup.string().trim().required('Full name is required!').min(3, 'Full name is too short!'),
   email: Yup.string().trim().required('Email is required!').email('Invalid email!'),
   password: Yup.string().trim().required('Password is required!').min(8, 'Password is too short!'),
-  confirmPassword: Yup.string().trim().required('Confirm password is required!').oneOf([Yup.ref('password'), null], 'Passwords do not match!'),
+  confirmPassword: Yup.string().trim().required('Confirm password is required!').oneOf([Yup.ref('password'), null], 'Password does not match!'),
 });
 
-const SignupForm = () => {
+const SignupForm = ({ navigation }) => {
   const userInfo = {
     fullName: '',
     email: '',
@@ -50,7 +52,15 @@ const SignupForm = () => {
     const res = await client.post('/create-user', {
       ...values
     });
-    console.log(res.data);
+
+    if (res.data.success) {
+      const signInRes = await client.post('/sign-in', { email: values.email, password: values.password });
+      if (signInRes.data.success) {
+        navigation.dispatch(StackActions.replace('ImageUpload', { token: signInRes.data.token, })
+        );
+      }
+    }
+
     formikActions.resetForm();
     formikActions.setSubmitting(false);
   };
