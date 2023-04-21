@@ -6,6 +6,7 @@ import LoginForm from './app/components/LoginForm';
 import SignupForm from './app/components/SignupForm';
 import { useEffect, useRef } from 'react';
 import axios from 'axios';
+import ImageUpload from './app/components/ImageUpload';
 
 const { width } = Dimensions.get('window');
 
@@ -15,7 +16,7 @@ export default function App() {
 
   const fetchAPI = async () => {
     try {
-      const res = await axios.get('http://192.168.0.122:8000/');
+      const res = await axios.get('http://192.168.2.104:8000/');
       console.log(res.data);
     } catch (error) {
       console.log(error.message);
@@ -95,6 +96,10 @@ export default function App() {
       </ScrollView>
     </View>
   );
+
+  // return (
+  //   <ImageUpload />
+  // );
 }
 
 const styles = StyleSheet.create({
