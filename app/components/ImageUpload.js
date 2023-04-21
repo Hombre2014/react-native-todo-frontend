@@ -2,10 +2,13 @@ import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import React, { useState } from 'react';
 import * as ImagePicker from 'expo-image-picker';
 import client from '../api/client';
+import { StackActions } from '@react-navigation/native';
 
-const ImageUpload = () => {
+const ImageUpload = (props) => {
   const [profileImage, setProfileImage] = useState(null);
   const [uploadProgress, setUploadProgress] = useState(0);
+  const { token } = props.route.params;
+
   const openImageLibrary = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== 'granted') {
@@ -37,10 +40,14 @@ const ImageUpload = () => {
         headers: {
           Accept: 'application/json',
           'Content-Type': 'multipart/form-data',
-          authorization: `JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NDM4NTkzYTRjMjk0OTkzZmZjOWE1MDYiLCJpYXQiOjE2ODIwNjg4MzgsImV4cCI6MTY4MjE1NTIzOH0.7Aj2vcwp02s5tBeANeLsHft4SRL0z9b9SbAuoWVV-ic`
+          authorization: `JWT ${token}`
         }
         // onUploadProgress: ({ loaded, total }) => console.log(loaded / total),
       });
+
+      if (res.data.success) {
+        props.navigation.dispatch(StackActions.replace('UserProfile'));
+      }
     } catch (error) {
       console.log(error.message);
     }
